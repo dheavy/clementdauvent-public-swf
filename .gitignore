@@ -29,3 +29,7 @@ local.properties
 logs/
 
 .DS_Store
+
+.actionScriptProperties
+
+.actionScriptProperties

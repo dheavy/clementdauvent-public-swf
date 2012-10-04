@@ -33,3 +33,7 @@ logs/
 .actionScriptProperties
 
 .actionScriptProperties
+
+*.jpg
+
+*.pdf

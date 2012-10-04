@@ -4,6 +4,9 @@ package com.clementdauvent.site.view.components
 	import com.clementdauvent.site.view.components.TitleScreen;
 	import com.clementdauvent.site.view.components.TutorialScreen;
 	
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.display.PixelSnapping;
 	import flash.display.Sprite;
 	
 	/**
@@ -11,6 +14,11 @@ package com.clementdauvent.site.view.components
 	 */
 	public class ContainerView extends Sprite
 	{
+		/**
+		 * @private	The container for the oversized bitmap backdrop.
+		 */
+		protected var _bmp:Bitmap;
+		
 		/**
 		 * @private	The main app screen.
 		 */
@@ -34,6 +42,54 @@ package com.clementdauvent.site.view.components
 		public function ContainerView()
 		{
 			init();
+		}
+		
+		/**
+		 * @public	create
+		 * @param	data:BitmapData	The BitmapData captured from a loaded images, ready to be injected as a backdrop cover in this instance.
+		 * @return	void
+		 */
+		public function create(data:BitmapData):void
+		{
+			_bmp = new Bitmap(data, PixelSnapping.AUTO, true);
+			_mainScreen.addChild(_bmp);
+		}
+		
+		/**
+		 * @public	addElement
+		 * @param	e:Sprite	An element (images, texts) to add in this container.
+		 * @return	void
+		 */
+		public function addElement(e:Sprite):void
+		{
+			_mainScreen.addChild(e);
+		}
+		
+		/**
+		 * @public	mainScreen
+		 * @return	A reference to MainScreen, the Sprite used as surface for elements.
+		 */
+		public function get mainScreen():Sprite
+		{
+			return _mainScreen;
+		}
+		
+		/**
+		 * @public	elementWidth
+		 * @return	The width of this view, after rescale. To be used instead of width.
+		 */
+		public function get elementWidth():Number
+		{
+			return _bmp.width;	
+		}
+		
+		/**
+		 * @public	elementHeight
+		 * @return	The height of this view, after rescale. To be used instead of width.
+		 */
+		public function get elementHeight():Number
+		{
+			return _bmp.height;
 		}
 		
 		/**

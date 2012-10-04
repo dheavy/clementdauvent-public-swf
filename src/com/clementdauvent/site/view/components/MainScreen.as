@@ -1,5 +1,7 @@
 package com.clementdauvent.site.view.components
 {
+	import com.clementdauvent.site.view.components.IDraggable;
+	
 	import flash.display.Sprite;
 	
 	/**

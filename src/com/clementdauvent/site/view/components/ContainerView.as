@@ -22,6 +22,8 @@ package com.clementdauvent.site.view.components
 		 */
 		protected var _bmp:Bitmap;
 		
+		protected var _background:Shape;
+		
 		/**
 		 * @private	The main app screen.
 		 */
@@ -54,6 +56,14 @@ package com.clementdauvent.site.view.components
 		 */
 		public function ContainerView()
 		{
+			_background = new Shape();
+			_background.graphics.beginFill(0xE8E8E8);
+			_background.graphics.drawRect(0, 0, 1, 1);
+			_background.graphics.endFill();
+			addChild(_background);
+			
+			addEventListener(Event.ADDED_TO_STAGE, redrawBackground);
+			
 			init();
 		}
 		
@@ -154,7 +164,17 @@ package com.clementdauvent.site.view.components
 			_titleScreen.addEventListener(TitleScreen.READY, titleScreen_readyHandler);
 			addChild(_titleScreen);
 			
+			addEventListener(Event.RESIZE, redrawBackground);
+			
 			_iter = new Array();
+		}
+		
+		protected function redrawBackground(e:Event = null):void
+		{
+			if (stage) {
+				_background.width = stage.stageWidth;
+				_background.height = stage.stageHeight;
+			}
 		}
 		
 		protected function adjustMenu(e:Event):void
@@ -167,6 +187,7 @@ package com.clementdauvent.site.view.components
 			_titleScreen.removeEventListener(TitleScreen.READY, titleScreen_readyHandler);
 			TweenMax.to(_titleScreen, 1, { autoAlpha: 1, onComplete: function():void {
 					_mainScreen.alpha = _hud.alpha = _descriptionBar.alpha = _tutorialScreen.alpha = 1;
+					_tutorialScreen.play();
 				}
 			});
 		}

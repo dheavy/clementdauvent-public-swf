@@ -6,6 +6,10 @@ package com.clementdauvent.site.view.components
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.events.NetStatusEvent;
+	import flash.media.Video;
+	import flash.net.NetConnection;
+	import flash.net.NetStream;
 	
 	/**
 	 * <p>Screen showing the usage tutorial.</p>
@@ -13,6 +17,9 @@ package com.clementdauvent.site.view.components
 	public class TutorialScreen extends Sprite
 	{
 		protected var _background:Shape;
+		protected var _ns:NetStream;
+		protected var _latestStatus:String;
+		protected var _vid:Video;
 		
 		/**
 		 * @public
@@ -30,9 +37,15 @@ package com.clementdauvent.site.view.components
 		
 		public function dispose(e:MouseEvent = null):void
 		{
-			TweenMax.to(this, 1, { autoAlpha: 0 });
+			TweenMax.to(_vid, .5, { autoAlpha: 0 });
+			TweenMax.to(this, .5, { autoAlpha: 0, delay: .5 });
 			this.removeEventListener(MouseEvent.CLICK, dispose);
-			stage.removeEventListener(Event.RESIZE, stage_resizeHandler);
+			stage.removeEventListener(Event.RESIZE, stage_resizeHandler);	
+		}
+		
+		public function play():void
+		{
+			_ns.resume();
 		}
 		
 		protected function init(e:Event = null):void
@@ -41,6 +54,7 @@ package com.clementdauvent.site.view.components
 			
 			buildBackground();
 			buildTutorialMovie();
+			redrawContent();
 			
 			this.buttonMode = true;
 			this.addEventListener(MouseEvent.CLICK, dispose);			
@@ -58,13 +72,56 @@ package com.clementdauvent.site.view.components
 		
 		protected function buildTutorialMovie():void
 		{
+			_latestStatus = '';
 			
+			_vid = new Video(640, 480);
+			addChild(_vid);
+			
+			var nc:NetConnection = new NetConnection();
+			nc.connect(null);
+			
+			var customClient:Object = new Object();
+			customClient.onMetaData = metaDataHandler;
+			
+			_ns = new NetStream(nc);
+			_ns.client = customClient;
+			_ns.play('vid/tutorial.f4v');
+			_ns.pause();
+			_ns.seek(0);
+			_ns.addEventListener(NetStatusEvent.NET_STATUS, netStatusEventHandler);
+			
+			_vid.attachNetStream(_ns);
+		}
+		
+		protected function redrawContent():void
+		{
+			_background.width = stage.stageWidth;
+			_background.height = stage.stageHeight;
+			_vid.x = (stage.stageWidth - _vid.width) / 2;
+			_vid.y = (stage.stageHeight - _vid.height) / 2;
 		}
 		
 		protected function stage_resizeHandler(e:Event):void
 		{
-			_background.width = stage.stageWidth;
-			_background.height = stage.stageHeight;
+			redrawContent();
+		}
+		
+		protected function metaDataHandler(infoObject:Object):void
+		{
+			// Ignore. 
+		}
+		
+		private function netStatusEventHandler(e:NetStatusEvent):void
+		{
+			if (_latestStatus == "NetStream.Buffer.Flush" && e.info.code == "NetStream.Buffer.Empty") {
+				// Ended.
+				dispatchEvent(new Event(Event.COMPLETE));
+			} else if (_latestStatus ==  "NetStream.Buffer.Flush" && e.info.code == "NetStream.Buffer.Empty") {
+				// Sometimes it throws the Flush event.
+				_latestStatus = "";
+			} else if (e.info.code == "NetStream.Buffer.Flush") {
+				_latestStatus = "NetStream.Buffer.Flush";
+			}
 		}
 	}
 }

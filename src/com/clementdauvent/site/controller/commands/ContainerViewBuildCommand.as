@@ -2,6 +2,7 @@ package com.clementdauvent.site.controller.commands
 {
 	import com.clementdauvent.site.ClementDauventPublicSite;
 	import com.clementdauvent.site.controller.events.DataFetchEvent;
+	import com.clementdauvent.site.model.ApplicationModel;
 	import com.clementdauvent.site.model.ContainerViewBuildModel;
 	import com.clementdauvent.site.utils.Logger;
 	import com.clementdauvent.site.view.components.ContainerView;
@@ -17,7 +18,13 @@ package com.clementdauvent.site.controller.commands
 	public class ContainerViewBuildCommand extends Command
 	{
 		/**
-		 * Injected instance of the model. 
+		 * Injected instance of the main app model.
+		 */
+		[Inject]
+		public var applicationModel:ApplicationModel;
+		
+		/**
+		 * Injected instance of the model used to build the container view. 
 		 */
 		[Inject]
 		public var containerModel:ContainerViewBuildModel;
@@ -28,7 +35,15 @@ package com.clementdauvent.site.controller.commands
 		[Inject]
 		public var mainView:ClementDauventPublicSite;
 		
+		/**
+		 * @private	The source URI of the bitmap image used as dummy filler to create a background.
+		 */
 		protected var _dummySrc:String;
+		
+		/**
+		 * @private	Reference to the container view about to be built.
+		 */
+		protected var _containerView:ContainerView;
 		
 		/**
 		 * @public	execute
@@ -68,28 +83,43 @@ package com.clementdauvent.site.controller.commands
 		protected function createMainView():void
 		{
 			// Create the main view.
-			var containerView:ContainerView = new ContainerView();
-			containerView.create(containerModel.vo.data);
+			_containerView = new ContainerView();
+			_containerView.create(containerModel.vo.data);
 			
 			// Use the injector to turn this ContainerView instance into a singleton.
-			injector.mapValue(ContainerView, containerView);
+			injector.mapValue(ContainerView, _containerView);
 			
 			// Add the view to the display list.
-			mainView.addChild(containerView);
+			mainView.addChild(_containerView);
 			
 			Logger.print("[INFO] ContainerViewBuildCommand has created the ContainerView instance and added it to the display list");
 		}
 		
+		/**
+		 * @private	prepareMiniMap
+		 * @return	void
+		 * 
+		 * Sets up all needed element to create minimap.
+		 */
 		protected function prepareMiniMap():void
 		{
 			var map:MiniMap = new MiniMap();
 			map.prepare(containerModel.vo.data);
-			mainView.addChild(map);
+			_containerView.addMiniMap(map);
+			
+			applicationModel.hudWidth = MiniMap.MAX_WIDTH;
+			
+			Logger.print("[INFO] ContainerViewBuildCommand has prepared the empty MiniMap instance and added it to the display list");
 		}
 		
+		/**
+		 * @private	callDataForImages
+		 * @return	void
+		 * 
+		 * Use the event bus to require data from the main model and initialize the build of images views.
+		 */
 		protected function callDataForImages():void
 		{
-			// Use the event bus to require data from the main model and initialize the build of images views.
 			eventDispatcher.dispatchEvent(new DataFetchEvent(DataFetchEvent.REQUIRE_DATA_FOR_IMAGES));
 		}
 	}

@@ -35,3 +35,7 @@ logs/
 .actionScriptProperties
 
 *.jpg
+
+*.pdf
+
+bin-debug/data/_public-data.json

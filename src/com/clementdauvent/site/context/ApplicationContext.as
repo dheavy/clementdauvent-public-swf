@@ -1,48 +1,51 @@
 package com.clementdauvent.site.context
 {
 	import com.clementdauvent.site.ClementDauventPublicSite;
-	import com.clementdauvent.site.controller.commands.ContainerViewBuildCommand;
-	import com.clementdauvent.site.controller.commands.ImageSelectCommand;
-	import com.clementdauvent.site.controller.commands.ImagesAndTextsSetupCommand;
-	import com.clementdauvent.site.controller.commands.PrevNextCommand;
-	import com.clementdauvent.site.controller.commands.StartupCommand;
-	import com.clementdauvent.site.controller.events.DataFetchEvent;
-	import com.clementdauvent.site.controller.events.ElementEvent;
-	import com.clementdauvent.site.model.ApplicationModel;
-	import com.clementdauvent.site.model.ContainerViewBuildModel;
+	import com.clementdauvent.site.controller.commands.*;
+	import com.clementdauvent.site.controller.events.*;
+	import com.clementdauvent.site.model.*;
 	import com.clementdauvent.site.utils.Logger;
-	import com.clementdauvent.site.view.components.ContainerView;
-	import com.clementdauvent.site.view.components.DescriptionBar;
-	import com.clementdauvent.site.view.components.Image;
-	import com.clementdauvent.site.view.components.MiniMap;
-	import com.clementdauvent.site.view.components.TextElement;
-	import com.clementdauvent.site.view.mediators.ContainerViewMediator;
-	import com.clementdauvent.site.view.mediators.DescriptionBarMediator;
-	import com.clementdauvent.site.view.mediators.ImageMediator;
-	import com.clementdauvent.site.view.mediators.MiniMapMediator;
-	import com.clementdauvent.site.view.mediators.StageMediator;
-	import com.clementdauvent.site.view.mediators.TextElementMediator;
+	import com.clementdauvent.site.view.components.*;
+	import com.clementdauvent.site.view.mediators.*;
 	
 	import flash.display.DisplayObjectContainer;
 	import flash.events.KeyboardEvent;
 	
 	import org.robotlegs.mvcs.Context;
 	
+	/**
+	 * <p>Defines a context for the application, following Robotlegs' apparatus.</p>
+	 */
 	public class ApplicationContext extends Context
 	{
+		/**
+		 * @public	ApplicationContext
+		 * @param	contextView:DisplayObjectContainer	A display object container to use as context. Defaut to null.
+		 * @param	autoStartup:Boolean	Should it call the startup() method automatically or not? Defaults to true.
+		 * @return	this
+		 * 
+		 * Defines a context for the application, following Robotlegs' apparatus.
+		 */
 		public function ApplicationContext(contextView:DisplayObjectContainer = null, autoStartup:Boolean = true)
 		{
 			super(contextView, autoStartup);
 		}
 		
+		/**
+		 * @public	startup
+		 * @return	void
+		 * 
+		 * Starts the app.
+		 */
 		override public function startup():void
 		{
 			// Defines Controller tier.
 			commandMap.mapEvent(DataFetchEvent.BEGIN, StartupCommand);
 			commandMap.mapEvent(DataFetchEvent.COMPLETE, ContainerViewBuildCommand);
 			commandMap.mapEvent(DataFetchEvent.REQUIRE_DATA_FOR_IMAGES, ImagesAndTextsSetupCommand);
-			commandMap.mapEvent(ElementEvent.SELECT, ImageSelectCommand);
 			commandMap.mapEvent(KeyboardEvent.KEY_DOWN, PrevNextCommand);
+			commandMap.mapEvent(DataFetchEvent.FINISH, MenuBuildCommand);
+			commandMap.mapEvent(MenuEvent.MENU_CLICKED, MenuClickedCommand);
 			
 			// Defines Model tier.
 			injector.mapSingleton(ApplicationModel);
@@ -55,6 +58,7 @@ package com.clementdauvent.site.context
 			mediatorMap.mapView(TextElement, TextElementMediator);
 			mediatorMap.mapView(DescriptionBar, DescriptionBarMediator);
 			mediatorMap.mapView(MiniMap, MiniMapMediator);
+			mediatorMap.mapView(Menu, MenuMediator);
 			injector.mapValue(ClementDauventPublicSite, this.contextView);
 			
 			// Start app.

@@ -9,7 +9,7 @@ package com.clementdauvent.site
 	import flash.text.Font;
 	
 	/**
-	 * <p>Main class for ClementDauvent.com public frontend.</p>
+	 * Main class for ClementDauvent.com public frontend.
 	 */
 	[SWF(width="1200", height="1024", backgroundColor="#E8E8E8", frameRate="30")]
 	

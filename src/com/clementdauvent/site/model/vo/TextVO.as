@@ -5,6 +5,8 @@ package com.clementdauvent.site.model.vo
 	 */
 	public class TextVO
 	{
+		protected var _id:int;
+		
 		/**
 		 * @private	The title of the text content.
 		 */
@@ -37,6 +39,7 @@ package com.clementdauvent.site.model.vo
 		
 		/**
 		 * @public 	TextVO
+		 * @param	id:int				ID of the content.
 		 * @param	title:String		The title of the text content.
 		 * @param	content:String		The actual content of this text section.
 		 * @param	isFirst:Boolean		Whether or not this section displays itself first on the website.
@@ -46,14 +49,20 @@ package com.clementdauvent.site.model.vo
 		 * 
 		 * Creates a new instance of TextVO, a Value Object holding references to element constitutive of Text sections.
 		 */
-		public function TextVO(title:String, content:String, isFirst:Boolean, xOffset:Number = 0, yOffset:Number = 0, scale:Number = 1)
+		public function TextVO(id:int, title:String, content:String, isFirst:Boolean, xOffset:Number = 0, yOffset:Number = 0, scale:Number = 1)
 		{
+			_id = id;
 			_title = title;
 			_content = content;
 			_isFirst = isFirst;
 			_xOffset = xOffset;
 			_yOffset = yOffset;
 			_scale = scale;
+		}
+		
+		public function get id():int
+		{
+			return _id;
 		}
 		
 		/**

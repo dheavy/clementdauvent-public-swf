@@ -1,7 +1,6 @@
 package com.clementdauvent.site.view.mediators
 {
 	import com.clementdauvent.site.controller.events.DataFetchEvent;
-	import com.clementdauvent.site.controller.events.DragEvent;
 	import com.clementdauvent.site.controller.events.ElementEvent;
 	import com.clementdauvent.site.model.ApplicationModel;
 	import com.clementdauvent.site.model.vo.DataVO;
@@ -103,7 +102,7 @@ package com.clementdauvent.site.view.mediators
 			
 			eventDispatcher.addEventListener(DataFetchEvent.DATA_READY, eventBus_dataReadyHandler);
 			eventDispatcher.addEventListener(ElementEvent.SELECT, eventBus_elementSelectHandler);
-			eventDispatcher.addEventListener(DragEvent.DRAG_MINIMAP_VIEWPORT, eventBus_dragMinimapViewportHandler);
+			eventDispatcher.addEventListener(Event.RESIZE, eventBus_resizeHandler);
 		}
 		
 		public function build(vo:DataVO):void
@@ -126,7 +125,7 @@ package com.clementdauvent.site.view.mediators
 			length = texts.length;
 			for (k; k < length; k++) {
 				var tVo:TextVO = texts[k];
-				var t:TextElement = new TextElement(tVo.id, tVo.title, tVo.content);
+				var t:TextElement = new TextElement(i, tVo.title, tVo.content);
 				t.x = tVo.xOffset;
 				t.y = tVo.yOffset;
 				t.scale = model.referenceScale;
@@ -150,12 +149,8 @@ package com.clementdauvent.site.view.mediators
 		
 		public function zoomOnOpening():void
 		{
-			var scale:Number = _surface.stage.stageHeight / model.referenceHeight;
-			_surface.scaleX = _surface.scaleY = scale;
-			
-			// Store the surface/mainscreen scale to model.
-			// Minimap uses it later on...
-			model.mainScreenScale = scale;
+			var ratio:Number = _surface.stage.stageHeight / model.referenceHeight;
+			_surface.scaleX = _surface.scaleY = ratio;
 		}
 		
 		public function showElement(index:int):void
@@ -189,6 +184,7 @@ package com.clementdauvent.site.view.mediators
 			Logger.print("[INFO] ContainerViewMediator finished configuring the ContainerView instance");
 			
 			zoomOnOpening();
+			view.drawBackground();
 		}
 		
 		/**
@@ -217,8 +213,6 @@ package com.clementdauvent.site.view.mediators
 			if (Math.abs(_vx) <= .1) _vx = 0;
 			if (Math.abs(_vy) <= .1) _vy = 0;
 			
-			tweenUpdateHandler();
-			
 			// Keep surface (MainScreen) within stage's boudaries.
 			//monitorBounds();
 		}
@@ -227,19 +221,19 @@ package com.clementdauvent.site.view.mediators
 		{
 			if (_surface.x > 0) {
 				_tween.kill();
-				_tween = new TweenMax(_surface, .5, { x: 0, onUpdate: tweenUpdateHandler });
+				_tween = new TweenMax(_surface, .5, { x: 0 });
 			}
 			if (_surface.x < (_surface.stage.stageWidth - _surface.width)) {
 				_tween.kill();
-				_tween = new TweenMax(_surface, .5, { x: _surface.stage.stageWidth - _surface.width, onUpdate: tweenUpdateHandler });
+				_tween = new TweenMax(_surface, .5, { x: _surface.stage.stageWidth - _surface.width });
 			}
 			if (_surface.y > 0) {
 				_tween.kill();
-				_tween = new TweenMax(_surface, .5, { y: 0, onUpdate: tweenUpdateHandler });
+				_tween = new TweenMax(_surface, .5, { y: 0 });
 			}
 			if (_surface.y < (_surface.stage.stageHeight - _surface.height)) {
 				_tween.kill();
-				_tween = new TweenMax(_surface, .5, { x: _surface.stage.stageHeight - _surface.height, onUpdate: tweenUpdateHandler });
+				_tween = new TweenMax(_surface, .5, { x: _surface.stage.stageHeight - _surface.height });
 			}
 		}
 		
@@ -276,6 +270,7 @@ package com.clementdauvent.site.view.mediators
 		protected function eventBus_dataReadyHandler(e:DataFetchEvent):void
 		{
 			build(e.vo);
+			eventDispatcher.removeEventListener(Event.RESIZE, eventBus_resizeHandler);
 		}
 		
 		protected function eventBus_elementSelectHandler(e:ElementEvent):void
@@ -288,18 +283,14 @@ package com.clementdauvent.site.view.mediators
 			}
 		}
 		
-		protected function eventBus_dragMinimapViewportHandler(e:DragEvent):void
+		protected function eventBus_resizeHandler(e:Event):void
 		{
-			var xPos:Number = e.pos.x * -1;
-			var yPos:Number = e.pos.y * -1;
-			view.mainScreen.x = xPos;
-			view.mainScreen.y = yPos;
+			view.drawBackground();
 		}
 		
 		protected function tweenUpdateHandler():void
 		{
-			var p:Point = new Point(view.mainScreen.x, view.mainScreen.y);
-			dispatch(new DragEvent(DragEvent.DRAG_SURFACE, p));
+			//
 		}
 	}
 }

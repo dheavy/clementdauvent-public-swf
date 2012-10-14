@@ -5,9 +5,6 @@ package com.clementdauvent.site.controller.commands
 	
 	import org.robotlegs.mvcs.Command;
 	
-	/**
-	 * <p>Command called on app startup.</p>
-	 */
 	public class StartupCommand extends Command
 	{
 		/**
@@ -22,12 +19,6 @@ package com.clementdauvent.site.controller.commands
 		[Inject]
 		public var mainView:ClementDauventPublicSite;
 		
-		/**
-		 * @public	execute
-		 * @return	void
-		 * 
-		 * Executes the command, fetching data from possible Flashvars and loading some more inside the model.
-		 */
 		override public function execute():void
 		{
 			var dataSrc:String = mainView.loaderInfo.parameters.data || 'data/public-data.json'; 

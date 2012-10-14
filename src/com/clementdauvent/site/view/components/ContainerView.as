@@ -10,13 +10,14 @@ package com.clementdauvent.site.view.components
 	import flash.display.PixelSnapping;
 	import flash.display.Shape;
 	import flash.display.Sprite;
-	import flash.events.Event;
 	
 	/**
 	 * <p>Container holding all screens.
 	 */
 	public class ContainerView extends Sprite
 	{
+		protected var _background:Shape;
+		
 		/**
 		 * @private	The container for the oversized bitmap backdrop.
 		 */
@@ -40,12 +41,6 @@ package com.clementdauvent.site.view.components
 		protected var _tutorialScreen:TutorialScreen;
 		
 		protected var _iter:Array;
-		
-		protected var _hud:Sprite;
-		
-		protected var _miniMap:MiniMap;
-		
-		protected var _menu:Menu;
 		
 		/**
 		 * @public ContainerView
@@ -82,17 +77,13 @@ package com.clementdauvent.site.view.components
 			}
 		}
 		
-		public function addMiniMap(m:MiniMap):void
+		public function drawBackground():void
 		{
-			_miniMap = m;
-			_hud.addChild(_miniMap);
-		}
-		
-		public function addMenu(m:Menu):void
-		{
-			_menu = m;
-			_menu.addEventListener(Event.ENTER_FRAME, adjustMenu);
-			_hud.addChild(_menu);
+			if (stage) {
+				_background.graphics.beginFill(0xE8E8E8);
+				_background.graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
+				_background.graphics.endFill();
+			}
 		}
 		
 		/**
@@ -134,12 +125,12 @@ package com.clementdauvent.site.view.components
 		 */
 		protected function init():void
 		{
+			_background = new Shape();
+			drawBackground();
+			addChild(_background);
+			
 			_mainScreen = new Sprite();
 			addChild(_mainScreen);
-			
-			_hud = new Sprite();
-			_hud.x = _hud.y = 5;
-			addChild(_hud);
 			
 			_descriptionBar = new DescriptionBar();
 			addChild(_descriptionBar);
@@ -147,28 +138,10 @@ package com.clementdauvent.site.view.components
 			_tutorialScreen = new TutorialScreen();
 			addChild(_tutorialScreen);
 			
-			_mainScreen.alpha = _hud.alpha = _descriptionBar.alpha = _tutorialScreen.alpha = 0;
-			
 			_titleScreen = new TitleScreen();
-			_titleScreen.alpha = 0;
-			_titleScreen.addEventListener(TitleScreen.READY, titleScreen_readyHandler);
 			addChild(_titleScreen);
 			
 			_iter = new Array();
-		}
-		
-		protected function adjustMenu(e:Event):void
-		{
-			_menu.y = _miniMap.y + _miniMap.height;
-		}
-		
-		protected function titleScreen_readyHandler(e:Event):void
-		{
-			_titleScreen.removeEventListener(TitleScreen.READY, titleScreen_readyHandler);
-			TweenMax.to(_titleScreen, 1, { autoAlpha: 1, onComplete: function():void {
-					_mainScreen.alpha = _hud.alpha = _descriptionBar.alpha = _tutorialScreen.alpha = 1;
-				}
-			});
 		}
 	}
 }

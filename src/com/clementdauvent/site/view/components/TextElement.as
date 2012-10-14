@@ -166,7 +166,7 @@ package com.clementdauvent.site.view.components
 		 */
 		public function serialize():TextVO
 		{
-			return new TextVO(id, _title, _content, isFirst, x, y);
+			return new TextVO(_title, _content, isFirst, x, y);
 		}
 		
 		/**
@@ -221,7 +221,6 @@ package com.clementdauvent.site.view.components
 			addChild(_fieldsContainer);
 			
 			_titleField = new TextField();
-			_titleField.embedFonts = true;
 			_titleField.defaultTextFormat = format1;
 			_titleField.text = _title;
 			_titleField.selectable = false;
@@ -229,7 +228,6 @@ package com.clementdauvent.site.view.components
 			_fieldsContainer.addChild(_titleField);
 						
 			_contentField = new TextField();
-			_contentField.embedFonts = true;
 			_contentField.multiline = true;
 			_contentField.defaultTextFormat = format2;
 			_contentField.htmlText = _content;

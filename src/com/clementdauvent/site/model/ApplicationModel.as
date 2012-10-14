@@ -45,10 +45,6 @@ package com.clementdauvent.site.model
 		
 		protected var _numElements:int;
 		
-		protected var _hudWidth:Number;
-		
-		protected var _mainScreenScale:Number;
-		
 		/**
 		 * @public	ApplicationModel
 		 * @return	this
@@ -93,7 +89,7 @@ package com.clementdauvent.site.model
 			} else {
 				_currentIndex = 0;
 			}
- 			
+			
 			showElement(_currentIndex);
 		}
 		
@@ -155,26 +151,6 @@ package com.clementdauvent.site.model
 			return _currentIndex;
 		}
 		
-		public function get hudWidth():Number
-		{
-			return _hudWidth;
-		}
-		
-		public function set hudWidth(value:Number):void
-		{
-			_hudWidth = value;
-		}
-		
-		public function get mainScreenScale():Number
-		{
-			return _mainScreenScale;
-		}
-		
-		public function set mainScreenScale(value:Number):void
-		{
-			_mainScreenScale = value;
-		}
-		
 		/**
 		 * @private	removeLoaderListeners
 		 * @return	void
@@ -225,7 +201,7 @@ package com.clementdauvent.site.model
 			
 			for (i = 0; i < textsArr.length; i++) {
 				o = textsArr[i];
-				var tVO:TextVO = new TextVO(id, o.title, o.content, o.isFirst, o.xOffset, o.yOffset);
+				var tVO:TextVO = new TextVO(o.title, o.content, o.isFirst, o.xOffset, o.yOffset);
 				texts.push(tVO);
 				
 				// Captures the element used as opening, and use its scale as reference.

@@ -24,15 +24,7 @@ package com.clementdauvent.site.controller.events
 		 */
 		public static const REQUIRE_DATA_FOR_IMAGES:String = "requireDataForImages";
 		
-		/**
-		 * Event type "dataReady"
-		 */
 		public static const DATA_READY:String = "dataReady";
-		
-		/**
-		 * Event type "finish"
-		 */
-		public static const FINISH:String = "finish";
 				
 		/**
 		 * A DataVO instance that instances of DataFetchEvent may carry around. 
@@ -41,9 +33,9 @@ package com.clementdauvent.site.controller.events
 		
 		/**
 		 * @public	DataFetchEvent
-		 * @param	type:String	The Event type — DataFetchEvent.BEGIN or DataFetchEvent.COMPLETE.
-		 * @param	vo:DataVO	An optional DataVO instance. Defaults to null.
-		 * @param	bubbles:Boolean	Whether or not the event should bubble up the event tree.
+		 * @param	type:String			The Event type — DataFetchEvent.BEGIN or DataFetchEvent.COMPLETE.
+		 * @param	vo:DataVO			An optional DataVO instance. Defaults to null.
+		 * @param	bubbles:Boolean		Whether or not the event should bubble up the event tree.
 		 * @param	cancelable:Boolean	Whether or not the event should be cancelable.
 		 * @return	this
 		 * 
